@@ -10,11 +10,13 @@ date_default_timezone_set("Europe/Madrid"); // Zona horaria para España
 function comprobarAtributos($nombre, $contrasena) {
 
     if(strlen($nombre) < 2) {
+        loggerFallido();
         throw new Exception("El nombre de usuario debe contener al menos 2 caracteres.");
         return false;
     }
 
     else if (!preg_match('/^[a-zA-Z]+$/', $nombre)) {
+        loggerFallido();
         throw new Exception("El nombre debe incluir solo letras y sin espacios.");
     }
 
@@ -33,7 +35,7 @@ function loggerFallido () {
     fwrite($logFile, $_POST['usuario']." = ");
     fwrite($logFile, "Intento fallido");
     fwrite($logFile, "\n");
-
+    
     fclose($logFile);
 }
 
