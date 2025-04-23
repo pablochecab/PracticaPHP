@@ -1,0 +1,95 @@
+<?php
+session_start();
+
+// Datos de acceso simulados (en un caso real, vendrían de una base de datos)
+$usuario_admin = 'admin';
+$usuario_raso = 'raso';
+$contrasena_valida = '1234';
+date_default_timezone_set("Europe/Madrid"); // Zona horaria para España
+
+function comprobarAtributos($nombre, $contrasena) {
+
+    if(strlen($nombre) < 2) {
+        throw new Exception("El nombre de usuario debe contener al menos 2 caracteres.");
+        return false;
+    }
+
+    else if (!preg_match('/^[a-zA-Z]+$/', $nombre)) {
+        throw new Exception("El nombre debe incluir solo letras y sin espacios.");
+    }
+
+    else return true;
+}
+
+function loggerFallido () {
+
+    // Resource: tipo especial que hace referencia a recursos externos como archivos o conexiones
+    //w -> Abre o crea, borra lo que haya y escribe.
+    //r -> Lee
+    //a -> Append, no borra, apila la información
+    $logFile = fopen("logger.txt", "a") or die ("Unable to open file!"); // Conectamos, creamos el archivo que queremos
+
+    fwrite($logFile, date("Y-m-d H:i:s")." => "); // Escribimos lo que nos interesa.
+    fwrite($logFile, $_POST['usuario']." = ");
+    fwrite($logFile, "Intento fallido");
+    fwrite($logFile, "\n");
+
+    fclose($logFile);
+}
+
+function loggerExito() {
+
+    $logFile = fopen("logger.txt", "a") or die ("Unable to open file!"); // Conectamos, creamos el archivo que queremos
+
+    fwrite($logFile, date("Y-m-d H:i:s")." => "); // Escribimos lo que nos interesa.
+    fwrite($logFile, $_POST['usuario']. " = ");
+    fwrite($logFile, "Éxito al iniciar");
+    fwrite($logFile, "\n");
+
+    fclose($logFile);
+
+}
+
+// Verificamos si se envió el formulario
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $usuario = $_POST['usuario'];
+    $contrasena = $_POST['contrasena'];
+
+    // Asegurarse de que estos campos existen y han sido rellenados. Si lo han sido, los comprobamos y logeamos.
+    if(isset($usuario) && isset($contrasena)) {
+        // Verificamos que el nombre sea correcto
+        comprobarAtributos($usuario, $contrasena);
+
+        if ($usuario === $usuario_admin && $contrasena === $contrasena_valida ||
+            $usuario === $usuario_raso && $contrasena === $contrasena_valida) {
+                loggerExito();
+                $_SESSION['usuario'] = $usuario; // Guardamos el usuario en sesión
+                header("Location: bienvenido.php"); // Redirigimos
+                exit();
+            } else {
+                loggerFallido();
+                throw new Exception("Usuario o contraseña invalidos.");
+            }       
+        }
+
+    //Logeamos el nombre y la fecha
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login PHP</title>
+</head>
+<body>
+    <h2>Iniciar sesión</h2>
+    <form method="POST" action="">
+        <label>Usuario:</label>
+        <input type="text" name="usuario" required minlength="2"><br><br>
+        <label>Contraseña:</label>
+        <input type="password" name="contrasena" required><br><br>
+        <button type="submit">Entrar</button>
+    </form>
+</body>
+</html>
