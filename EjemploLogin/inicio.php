@@ -47,33 +47,34 @@ function loggerExito() {
     fwrite($logFile, "\n");
 
     fclose($logFile);
-
 }
 
 // Verificamos si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+    // Al enviarse, recogemos sus valores
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
 
-    // Asegurarse de que estos campos existen y han sido rellenados. Si lo han sido, los comprobamos y logeamos.
+    // Nos aseguramos de que estos campos existen y han sido rellenados.
     if(isset($usuario) && isset($contrasena)) {
-        // Verificamos que el nombre sea correcto
+
+        // Verificamos que cumplan los requisitos.
         comprobarAtributos($usuario, $contrasena);
 
+        // Una vez han sido verificados los formatos, vemos si coincide con el nombre de la base de datos.
         if ($usuario === $usuario_admin && $contrasena === $contrasena_valida ||
             $usuario === $usuario_raso && $contrasena === $contrasena_valida) {
+                // Si es así, registramos en el logger que un usuario se ha logueado.
                 loggerExito();
                 $_SESSION['usuario'] = $usuario; // Guardamos el usuario en sesión
                 header("Location: bienvenido.php"); // Redirigimos
                 exit();
             } else {
-                loggerFallido();
+                loggerFallido(); //Si falla, tambien lo registramos, de cara a ver que alguien hace muchos intentos o algo que nos dé pistas.
                 throw new Exception("Usuario o contraseña invalidos.");
             }       
         }
-
-    //Logeamos el nombre y la fecha
 }
 ?>
 
