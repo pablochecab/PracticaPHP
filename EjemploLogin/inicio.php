@@ -9,6 +9,7 @@ date_default_timezone_set("Europe/Madrid"); // Zona horaria para España
 
 function comprobarAtributos($nombre, $contrasena) {
 
+    // Comentario añadido
     if(strlen($nombre) < 2) {
         loggerFallido();
         throw new Exception("El nombre de usuario debe contener al menos 2 caracteres.");
