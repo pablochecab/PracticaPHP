@@ -55,29 +55,32 @@ function loggerExito() {
 // Verificamos si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // Al enviarse, recogemos sus valores
-    $usuario = $_POST['usuario'];
-    $contrasena = $_POST['contrasena'];
+    try {
+        $usuario = $_POST['usuario'];
+        $contrasena = $_POST['contrasena'];
 
-    // Nos aseguramos de que estos campos existen y han sido rellenados.
-    if(isset($usuario) && isset($contrasena)) {
+        if (isset($usuario) && isset($contrasena)) {
+            comprobarAtributos($usuario, $contrasena);
 
-        // Verificamos que cumplan los requisitos.
-        comprobarAtributos($usuario, $contrasena);
-
-        // Una vez han sido verificados los formatos, vemos si coincide con el nombre de la base de datos.
-        if ($usuario === $usuario_admin && $contrasena === $contrasena_valida ||
-            $usuario === $usuario_raso && $contrasena === $contrasena_valida) {
-                // Si es así, registramos en el logger que un usuario se ha logueado.
+            if (
+                ($usuario === $usuario_admin && $contrasena === $contrasena_valida) ||
+                ($usuario === $usuario_raso && $contrasena === $contrasena_valida)
+            ) {
                 loggerExito();
-                $_SESSION['usuario'] = $usuario; // Guardamos el usuario en sesión
-                header("Location: bienvenido.php"); // Redirigimos
+                $_SESSION['usuario'] = $usuario;
+                header("Location: bienvenido.php");
                 exit();
             } else {
-                loggerFallido(); //Si falla, tambien lo registramos, de cara a ver que alguien hace muchos intentos o algo que nos dé pistas.
-                throw new Exception("Usuario o contraseña invalidos.");
-            }       
+                loggerFallido();
+                throw new Exception("Usuario o contraseña inválidos.");
+            }
         }
+
+    } catch (Exception $e) {
+        // Aquí recogemos todas las excepciones que puedan saltar, se incluyen las de las funciones ya que están dentro
+        // del bloque try.
+        $error_message = $e->getMessage();
+    }
 }
 ?>
 
@@ -88,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <h2>Iniciar sesión</h2>
+    <?php echo "<p>$error_message</p>" ?>
     <form method="POST" action="inicio.php">
         <label>Usuario:</label>
         <input type="text" name="usuario" required minlength="2"><br><br>
