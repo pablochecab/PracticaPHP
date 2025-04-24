@@ -20,6 +20,14 @@ if (!isset($_SESSION['usuario'])) {
         <button>AJUSTES DE LA APP</button>
     <?php endif; ?>
 
+    <form method="GET" action="resultado.php">
+        <label>Origen: </label>
+        <input type="text" name="origen" required><br><br>
+        <label>Destino</label>
+        <input type="text" name="destino" required><br><br>
+        <button type="submit">Buscar</button>
+    </form>
+
     <a href="logout.php">Cerrar sesión</a>
 </body>
 </html>
