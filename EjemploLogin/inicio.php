@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <h2>Iniciar sesión</h2>
-    <form method="POST" action="">
+    <form method="POST" action="inicio.php">
         <label>Usuario:</label>
         <input type="text" name="usuario" required minlength="2"><br><br>
         <label>Contraseña:</label>
