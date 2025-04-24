@@ -6,6 +6,7 @@ $usuario_admin = 'admin';
 $usuario_raso = 'raso';
 $contrasena_valida = '1234';
 date_default_timezone_set("Europe/Madrid"); // Zona horaria para España
+$error = false;
 
 function comprobarAtributos($nombre, $contrasena) {
 
@@ -79,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         // Aquí recogemos todas las excepciones que puedan saltar, se incluyen las de las funciones ya que están dentro
         // del bloque try.
+        $error = true;
         $error_message = $e->getMessage();
     }
 }
@@ -90,8 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Login PHP</title>
 </head>
 <body>
-    <h2>Iniciar sesión</h2>
-    <?php echo "<p>$error_message</p>" ?>
+    <h2>Iniciar sesión</h2> 
+    <?php if ($error): ?>
+        <p style="color:red;"><?php echo $error_message; ?></p>
+    <?php endif; ?>
     <form method="POST" action="inicio.php">
         <label>Usuario:</label>
         <input type="text" name="usuario" required minlength="2"><br><br>
